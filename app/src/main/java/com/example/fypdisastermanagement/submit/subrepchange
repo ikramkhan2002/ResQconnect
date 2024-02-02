@@ -1,0 +1,75 @@
+@Composable
+fun ReportEvidenceImages() {
+    var selectedImageUris by remember {
+        mutableStateOf<List<Uri>>(emptyList())
+    }
+    val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = { selectedImageUris = it }
+    )
+    Column {
+        if (selectedImageUris.isEmpty()) {
+            // Your code for displaying the "Add" button
+            Box(
+                modifier = Modifier
+                    .height(80.dp)
+                    .width(100.dp)
+                    .padding(start = 20.dp)
+                    .border(
+                        BorderStroke(
+                            width = 1.dp,
+                            color = Color(0xFF808080).copy(alpha = 0.45f)
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color(0XFFD34040).copy(0.80f),
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+        } else {
+            for (i in selectedImageUris.indices step 2) {
+                // Display images in rows of 3
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(start = 20.dp , end = 20.dp),
+                    // horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    for (j in i until (i + 2).coerceAtMost(selectedImageUris.size)) {
+                        AsyncImage(
+                            model = selectedImageUris[j],
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(160.dp)
+                                .padding(5.dp),
+                            contentScale = ContentScale.FillBounds
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = {
+                multiplePhotoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            shape = RoundedCornerShape(0),
+            colors = ButtonDefaults.buttonColors(Color(0xFFD34040)),
+            modifier = Modifier
+                .size(width = 160.dp, height = 65.dp)
+                .padding(start = 20.dp, top = 8.dp, bottom = 20.dp)
+        ) {
+            Text(
+                text = "Choose file",
+                fontFamily = FontFamily(Font(R.font.poppinsmedium)),
+                fontSize = 14.sp,
+            )
+        }
+    }
+}
+
